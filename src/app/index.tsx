@@ -1,13 +1,20 @@
-import { Box } from '@mui/material'
-import { AppProvider } from '../contexts/app-context'
-import ThreeScene from './three-scene'
+import { useMemo, useState } from 'react'
+import ImagePicker from './image-picker'
+import Viewer360 from './viewer-360'
 
-export default function TableroView() {
-  return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <AppProvider>
-        <ThreeScene />
-      </AppProvider>
-    </Box>
-  )
+export default function App() {
+  const [file, setFile] = useState<File | null>(null)
+
+  const imageUrl = useMemo(() => {
+    if (file) {
+      return URL.createObjectURL(file)
+    }
+    return ''
+  }, [file])
+
+  if (!file) {
+    return <ImagePicker file={file} setFile={setFile} />
+  }
+
+  return <Viewer360 imageUrl={imageUrl} />
 }
