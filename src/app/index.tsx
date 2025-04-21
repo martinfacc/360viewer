@@ -1,20 +1,12 @@
-import { useMemo, useState } from 'react'
-import ImagePicker from './image-picker'
+import { Box } from '@mui/material'
 import Viewer360 from './viewer-360'
+import Panel from './panel'
 
 export default function App() {
-  const [file, setFile] = useState<File | null>(null)
-
-  const imageUrl = useMemo(() => {
-    if (file) {
-      return URL.createObjectURL(file)
-    }
-    return ''
-  }, [file])
-
-  if (!file) {
-    return <ImagePicker file={file} setFile={setFile} />
-  }
-
-  return <Viewer360 imageUrl={imageUrl} />
+  return (
+    <Box position="relative" width="100%" height="100%">
+      <Viewer360 />
+      <Panel />
+    </Box>
+  )
 }
