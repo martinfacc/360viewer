@@ -8,7 +8,7 @@ export default function Panel() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Manejadores simplificados
+  // Simplified handlers
   const handleFileSelect = () => {
     inputRef.current?.click()
     setAnchorEl(null)
@@ -36,7 +36,7 @@ export default function Panel() {
           <ListItemIcon>
             <Iconify icon="mdi:image" width={24} />
           </ListItemIcon>
-          <ListItemText>Seleccionar imagen</ListItemText>
+          <ListItemText>Select image</ListItemText>
         </MenuItem>
 
         <MenuItem
@@ -48,7 +48,7 @@ export default function Panel() {
           <ListItemIcon>
             <Iconify icon="mdi:mirror" width={24} />
           </ListItemIcon>
-          <ListItemText>Invertir imagen</ListItemText>
+          <ListItemText>Mirror image</ListItemText>
           <Switch
             edge="end"
             checked={isMirrored}
