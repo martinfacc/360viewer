@@ -36,7 +36,7 @@
 1. Clone this repository:
 
    ```
-   git clone https://github.com/your-username/360viewer.git
+   git clone https://github.com/martinfacc/360viewer.git
    cd 360viewer
    ```
 
