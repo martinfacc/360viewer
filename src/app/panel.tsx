@@ -1,12 +1,67 @@
-import { useRef, useState } from 'react'
-import { Box, Button, Menu, MenuItem, ListItemIcon, ListItemText, Switch } from '@mui/material'
+import { useRef, useState, useEffect } from 'react'
+import {
+  Box,
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Switch,
+  Slider,
+  CircularProgress,
+  Typography
+} from '@mui/material'
 import Iconify from '../components/iconify'
 import { useAppContext } from '../hooks/use-app-context'
 
 export default function Panel() {
-  const { isMirrored, setIsMirrored, setFile } = useAppContext()
+  const {
+    isMirrored,
+    setIsMirrored,
+    useAdaptiveBands,
+    setUseAdaptiveBands,
+    bandSize,
+    setBandSize,
+    setFile,
+    processingImage
+  } = useAppContext()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Local state for slider value with debounce
+  const [localBandSize, setLocalBandSize] = useState(bandSize)
+  const timeoutRef = useRef<number | null>(null)
+
+  // Update local value when global value changes
+  useEffect(() => {
+    setLocalBandSize(bandSize)
+  }, [bandSize])
+
+  // Function to handle slider changes with debounce
+  const handleSliderChange = (_: Event, newValue: number | number[]) => {
+    const value = newValue as number
+    setLocalBandSize(value)
+
+    // Clear any pending timeout
+    if (timeoutRef.current !== null) {
+      window.clearTimeout(timeoutRef.current)
+    }
+
+    // Set a new timeout to update the real value
+    timeoutRef.current = window.setTimeout(() => {
+      setBandSize(value)
+      timeoutRef.current = null
+    }, 300) // 300ms delay
+  }
+
+  // Clean up the timeout when component unmounts
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current !== null) {
+        window.clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
 
   // Simplified handlers
   const handleFileSelect = () => {
@@ -55,6 +110,44 @@ export default function Panel() {
             slotProps={{ input: { 'aria-labelledby': 'mirror-switch' } }}
           />
         </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            setUseAdaptiveBands(!useAdaptiveBands)
+          }}
+        >
+          <ListItemIcon>
+            <Iconify icon="mdi:image-filter" width={24} />
+          </ListItemIcon>
+          <ListItemText>Add adaptive bands</ListItemText>
+          <Switch
+            edge="end"
+            checked={useAdaptiveBands}
+            slotProps={{ input: { 'aria-labelledby': 'black-bands-switch' } }}
+          />
+        </MenuItem>
+
+        {useAdaptiveBands && (
+          <Box sx={{ width: '100%', px: 2 }}>
+            <Typography variant="body2" gutterBottom>
+              Band size: {localBandSize}%
+            </Typography>
+            <Slider
+              value={localBandSize}
+              onChange={handleSliderChange}
+              min={1}
+              max={50}
+              step={1}
+              aria-labelledby="black-band-size-slider"
+              disabled={processingImage}
+            />
+            {processingImage && (
+              <Box display="flex" justifyContent="center" mt={1}>
+                <CircularProgress size={20} />
+              </Box>
+            )}
+          </Box>
+        )}
       </Menu>
       <input
         ref={inputRef}
